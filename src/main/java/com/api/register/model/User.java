@@ -41,12 +41,4 @@ public class User {
 
     private Boolean isActive = true;
 
-    public static boolean mailValidation(String email){
-        //OWASP Validation Regular Expression
-        String regexPattern = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        return Pattern.compile(regexPattern)
-                .matcher(email)
-                .matches();
-    }
-
 }
