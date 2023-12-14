@@ -21,7 +21,9 @@ public class OutputUserDTO {
 
     public static OutputUserDTO outputUserDTO(User user){
         OutputUserDTO userDTO = new OutputUserDTO();
-        userDTO.setUuid(user.getUuid().toString());
+        if (user.getUuid() != null) {//Added if because unit test problems when uuid is null
+            userDTO.setUuid(user.getUuid().toString());
+        }
         userDTO.setCreated(user.getCreated());
         userDTO.setModified(user.getModified());
         userDTO.setLastLogin(user.getLastLogin());

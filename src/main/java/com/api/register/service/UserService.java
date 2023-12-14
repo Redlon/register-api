@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -89,13 +88,6 @@ public class UserService {
         }
         return Pattern.compile(regexPattern)
                 .matcher(stringToCheck)
-                .matches();
-    }
-
-    private static boolean passwordValidation(String password){
-        String regexPattern = "";
-        return Pattern.compile(regexPattern)
-                .matcher(password)
                 .matches();
     }
 
