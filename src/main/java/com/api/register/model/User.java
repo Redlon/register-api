@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name="USER")
@@ -35,8 +36,17 @@ public class User {
 
     private LocalDateTime lastLogin;
 
+    @Lob
     private String token;
 
-    private boolean isActive = true;
+    private Boolean isActive = true;
+
+    public static boolean mailValidation(String email){
+        //OWASP Validation Regular Expression
+        String regexPattern = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        return Pattern.compile(regexPattern)
+                .matcher(email)
+                .matches();
+    }
 
 }
