@@ -1,9 +1,16 @@
 package com.api.register.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "PHONES")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Phone {
 
     @Id
@@ -16,5 +23,6 @@ public class Phone {
 
     @ManyToOne
     @JoinColumn(name="uuid", nullable=false)
+    @JsonIgnore
     private User user;
 }

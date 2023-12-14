@@ -1,6 +1,5 @@
 package com.api.register.service;
 
-import com.api.register.model.Phone;
 import com.api.register.model.User;
 import com.api.register.model.dto.OutputUserDTO;
 import com.api.register.repositories.UserRepository;
@@ -9,7 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,12 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PhoneService phoneService;
+
     public ResponseEntity<Map<String, Object>> addUser(String bearerToken, Map<String, Object> user) {
-        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<>();
         //Check if mail is valid
         if (!User.mailValidation((String) user.get("email"))){
             response.put("mensaje", "El mail ingresado no es valido");
@@ -41,7 +46,7 @@ public class UserService {
         ObjectMapper objectMapper = JsonMapper.builder().findAndAddModules().build();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        Map<String, Object> map = objectMapper.convertValue(userDTO, new TypeReference<Map<String, Object>>() {});
+        Map<String, Object> map = objectMapper.convertValue(userDTO, new TypeReference<>() {});
 
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
@@ -51,14 +56,13 @@ public class UserService {
         newUser.setName((String) user.get("name"));
         newUser.setEmail((String) user.get("email"));
         newUser.setPassword((String) user.get("password"));
-        //Create and save each phone of the list
-        newUser.setPhoneList((List<Phone>) user.get("phones"));
         LocalDateTime now = LocalDateTime.now();
         newUser.setCreated(now);
         newUser.setModified(now);
         newUser.setLastLogin(now);
         newUser.setToken(bearerToken);
         userRepository.save(newUser);
+        phoneService.createAndSavePhoneList((List<Map<String, Object>>) user.get("phones"), newUser);
         return newUser;
     }
 
@@ -85,8 +89,9 @@ public class UserService {
 
         if (oldUser.isPresent()){
             User modifiedUser = oldUser.get();
+            BeanUtils.copyProperties(user, modifiedUser);
             modifiedUser.setModified(LocalDateTime.now());
-
+            modifiedUser.setLastLogin(LocalDateTime.now());
             userRepository.save(modifiedUser);
             return new ResponseEntity<>(modifiedUser, HttpStatus.OK);
         }
